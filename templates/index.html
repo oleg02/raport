@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Генератор рапортів</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --fg: #c9d1d9;
+        --container-bg: #161b22;
+        --primary: #58a6ff;
+        --primary-glow: #1f6feb44;
+        --secondary: #1f6feb;
+        --error: #f85149;
+        --border: #30363d;
+        --radius: 14px;
+        --shadow: 0 6px 32px rgba(0,0,0,0.45);
+        --transition: 0.25s;
+        --input-bg: #181e25;
+        --input-border: #30363d;
+        --input-focus: #58a6ff;
+        --input-hover: #222b38;
+        --button-bg: linear-gradient(90deg,#232a32 0%,#1f6feb 100%);
+        --button-hover: #388bfd;
+        --button-active: #1f6feb;
+        --hint-bg: #232a32;
+        --hint-fg: #7dcfff;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+        letter-spacing: 0.01em;
+      }
+      .container {
+        max-width: 900px;
+        margin: 40px auto 30px auto;
+        background: var(--container-bg);
+        padding: 32px 32px 24px 32px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1.5px solid var(--border);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 2.2rem;
+        color: var(--primary);
+        font-size: 2.25rem;
+        letter-spacing: 0.03em;
+        text-shadow: 0 2px 8px #1f6feb33;
+      }
+      fieldset {
+        border: 1.5px solid var(--border);
+        background: #181e25;
+        border-radius: 12px;
+        margin-bottom: 2.2rem;
+        padding: 1.3rem 1.2rem 0.7rem 1.2rem;
+        box-shadow: 0 1px 8px rgba(30,40,50,0.08);
+        transition: border-color var(--transition);
+      }
+      legend {
+        font-size: 1.22rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.8rem;
+        letter-spacing: 0.02em;
+        padding: 0 0.4em;
+        border-radius: 7px;
+        background: #13161b;
+        box-shadow: 0 2px 8px #1f6feb11;
+      }
+      .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.2rem;
+      }
+      .form-group {
+        flex: 1 1 270px;
+        min-width: 220px;
+        margin-bottom: 0.5rem;
+      }
+      label {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+        color: #7dcfff;
+        letter-spacing: 0.01em;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 0.82rem 1em;
+        margin-bottom: 1.1rem;
+        background: var(--input-bg);
+        border: 1.5px solid var(--input-border);
+        border-radius: 9px;
+        color: var(--fg);
+        font-size: 1.07rem;
+        transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+        box-shadow: none;
+        outline: none;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--input-focus);
+        box-shadow: 0 0 0 2px var(--primary-glow);
+        background: var(--input-hover);
+      }
+      input:hover,
+      select:hover,
+      textarea:hover {
+        background: #202733;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+      }
+      .hidden {
+        display: none;
+      }
+      .radio-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .required {
+        color: var(--error);
+        margin-left: 0.25rem;
+      }
+      button {
+        width: 100%;
+        padding: 0.85rem 1.2rem;
+        font-size: 1.09rem;
+        font-weight: 600;
+        color: #e6f1fb;
+        background: var(--button-bg);
+        border: none;
+        border-radius: 9px;
+        cursor: pointer;
+        box-shadow: 0 2px 12px #1f6feb22;
+        letter-spacing: 0.02em;
+        transition: background var(--transition), box-shadow var(--transition), color var(--transition);
+        outline: none;
+      }
+      button:hover {
+        background: var(--button-hover);
+        color: #fff;
+        box-shadow: 0 4px 18px #1f6feb33;
+      }
+      button:active {
+        background: var(--button-active);
+        color: #fff;
+      }
+      .date-hint {
+        background: var(--hint-bg);
+        color: var(--hint-fg);
+        font-size: 1.01em;
+        border-radius: 7px;
+        margin-top: -0.7rem;
+        margin-bottom: 0.8rem;
+        padding: 0.32em 0.7em;
+        display: none;
+        box-shadow: 0 1px 6px #1f6feb11;
+      }
+      @media (max-width: 768px) {
+        .form-row {
+          flex-direction: column;
+        }
+        .container {
+          padding: 14px 4px 10px 4px;
+        }
+        fieldset {
+          padding: 0.7rem 0.4rem 0.3rem 0.4rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Генератор рапортів</h1>
+      <form id="reportForm" action="{{ url_for('report') }}" method="post" autocomplete="on">
+        <div style="display:flex; gap:1rem; margin-bottom:1rem;">
+          <button type="button" id="fillLastBtn" style="flex:1;">Заповнити як минулого разу</button>
+          <button type="button" id="clearAllBtn" style="flex:1;">Очистити все</button>
+        </div>
+        <fieldset>
+          <legend>1. Інформація про документ</legend>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="military_department_sender"
+                >Військова частина (відправник)<span class="required"
+                  >*</span
+                ></label
+              >
+              <input
+                id="military_department_sender"
+                name="military_department_sender"
+                type="text"
+                required
+                placeholder="А2900"
+              />
+            </div>
+            <div class="form-group">
+              <label for="military_department_receiver"
+                >Військова частина (отримувач)<span class="required"
+                  >*</span
+                ></label
+              >
+              <input
+                id="military_department_receiver"
+                name="military_department_receiver"
+                type="text"
+                required
+                placeholder="А0281"
+              />
+            </div>
+            <div class="form-group">
+              <label for="issued_document_number"
+                >Вихідний номер документа<span class="required">*</span></label
+              >
+              <input
+                id="issued_document_number"
+                name="issued_document_number"
+                type="text"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="issued_date"
+                >Вихідна дата<span class="required">*</span></label
+              >
+              <input id="issued_date" name="issued_date" type="date" required />
+              <div class="date-hint" id="hint_issued_date"></div>
+            </div>
+            <div class="form-group">
+              <label for="dbr_incoming_number"
+                >Вхідний номер (ДБР)<span class="required">*</span></label
+              >
+              <input
+                id="dbr_incoming_number"
+                name="dbr_incoming_number"
+                type="text"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="dbr_issued_date"
+                >Вхідна дата (ДБР)<span class="required">*</span></label
+              >
+              <input
+                id="dbr_issued_date"
+                name="dbr_issued_date"
+                type="date"
+                required
+              />
+              <div class="date-hint" id="hint_dbr_issued_date"></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>2. Особисті дані військовослужбовця</legend>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="surname"
+                >Прізвище<span class="required">*</span></label
+              >
+              <input
+                id="surname"
+                name="surname"
+                type="text"
+                spellcheck="true"
+                lang="uk"
+                placeholder="Андріїв"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="name">Ім'я<span class="required">*</span></label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                spellcheck="true"
+                lang="uk"
+                placeholder="Андрій"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="patronymic"
+                >По батькові<span class="required">*</span></label
+              >
+              <input
+                id="patronymic"
+                name="patronymic"
+                type="text"
+                spellcheck="true"
+                lang="uk"
+                placeholder="Андрійович"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="birth_date"
+                >Дата народження<span class="required">*</span></label
+              >
+              <input id="birth_date" name="birth_date" type="date" required />
+              <div class="date-hint" id="hint_birth_date"></div>
+            </div>
+            <div class="form-group inflection-block">
+  <div class="inflection-labels">
+    <label for="genitive_output"><span class="icon">📝</span> Родовий відмінок</label>
+    <label for="instrumental_output"><span class="icon">📝</span> Орудний відмінок</label>
+  </div>
+  <div class="inflection-inputs">
+    <input id="genitive_output" name="genitive_output" type="text" autocomplete="off" placeholder="Введіть або скоригуйте..." />
+    <input id="instrumental_output" name="instrumental_output" type="text" autocomplete="off" placeholder="Введіть або скоригуйте..." />
+  </div>
+  <div class="inflection-hint">
+    <span class="icon">💡</span> Можна скоригувати вручну, якщо автоматична форма неправильна
+  </div>
+</div>
+<style>
+  .inflection-block {
+    background: #181e25;
+    border: 1.5px solid #30363d;
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem 0.7rem 1.2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(30,40,50,0.10);
+    transition: border-color 0.2s;
+  }
+  .inflection-labels {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: #7dcfff;
+    font-size: 1.08rem;
+  }
+  .inflection-labels .icon {
+    margin-right: 0.3em;
+    font-size: 1.1em;
+    vertical-align: middle;
+  }
+  .inflection-inputs {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .inflection-inputs input {
+    background: #232a32;
+    border: 1.5px solid #30363d;
+    color: #e6f1fb;
+    border-radius: 8px;
+    padding: 0.7em 1em;
+    font-size: 1.08rem;
+    font-family: inherit;
+    box-shadow: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .inflection-inputs input:focus {
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 2px #1f6feb33;
+    background: #222b38;
+  }
+  .inflection-hint {
+    font-size: 1rem;
+    color: #7dcfff;
+    margin-top: 0.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-weight: 500;
+    background: none;
+  }
+  .inflection-hint .icon {
+    font-size: 1.1em;
+    margin-right: 0.2em;
+  }
+  @media (max-width: 700px) {
+    .inflection-labels, .inflection-inputs {
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+  }
+</style>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>3. Інформація про правопорушення</legend>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="SZC_time"
+                >Час СЗЧ<span class="required">*</span></label
+              >
+              <input
+                id="SZC_time"
+                name="SZC_time"
+                type="text"
+                placeholder="близько 21:00"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="SZC_date"
+                >Дата СЗЧ<span class="required">*</span></label
+              >
+              <input id="SZC_date" name="SZC_date" type="date" required />
+              <div class="date-hint" id="hint_SZC_date"></div>
+            </div>
+            <div class="form-group">
+              <label for="crime_place_select"
+                >Деталі правопорушення<span class="required">*</span></label
+              >
+              <select
+                id="crime_place_select"
+                name="crime_place_select"
+                required
+              >
+                <option value="" disabled selected hidden>Оберіть...</option>
+                <option
+                  value="самовільно залишив розташування польового табору"
+                >
+                  самовільно залишив розташування польового табору
+                </option>
+                <option value="нез'явився вчасно з лікувального закладу">
+                  нез'явився вчасно з лікувального закладу
+                </option>
+                <option value="нез'явився вчасно з відпустки">
+                  нез'явився вчасно з відпустки
+                </option>
+                <option value="custom">Інше</option>
+              </select>
+              <input
+                id="crime_place_custom"
+                name="crime_place_custom"
+                type="text"
+                placeholder="Якщо інше..."
+                class="hidden"
+              />
+            </div>
+            <div class="form-group">
+              <label for="address"
+                >Адреса військової частини<span class="required">*</span></label
+              >
+              <input
+                id="address"
+                name="address"
+                type="text"
+                spellcheck="true"
+                lang="uk"
+                placeholder="Житомирська обл., с. Тетерівка"
+                required
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>4. Інформація про службу</legend>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Тип служби<span class="required">*</span></label>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input
+                    id="mobilization"
+                    name="service_type"
+                    type="radio"
+                    value="мобілізація"
+                    required
+                  />
+                  <label for="mobilization">Мобілізація</label>
+                </div>
+                <div class="radio-option">
+                  <input
+                    id="contract"
+                    name="service_type"
+                    type="radio"
+                    value="контракт"
+                    required
+                  />
+                  <label for="contract">Контракт</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="crime_type_select"
+                >Звание<span class="required">*</span></label
+              >
+              <select id="crime_type_select" name="crime_type_select" required>
+                <option value="" disabled selected hidden>
+                  Оберіть звання
+                </option>
+                <option>солдат</option>
+                <option>старший солдат</option>
+                <option>молодший сержант</option>
+                <option>сержант</option>
+                <option>старший сержант</option>
+                <option>молодший лейтенант</option>
+                <option>лейтенант</option>
+                <option>старший лейтенант</option>
+                <option>капітан</option>
+                <option>майор</option>
+                <option>підполковник</option>
+                <option>полковник</option>
+                <option value="custom">Інше</option>
+              </select>
+              <input
+                id="crime_type_custom"
+                name="crime_type_custom"
+                type="text"
+                placeholder="Якщо інше..."
+                class="hidden"
+              />
+            </div>
+            <div class="form-group">
+              <label for="position"
+                >Посада<span class="required">*</span></label
+              >
+              <input
+                id="position"
+                name="position"
+                type="text"
+                spellcheck="true"
+                lang="uk"
+                placeholder="Наприклад, командир відділення"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="meta"
+                >Прибув у відрядження<span class="required">*</span></label
+              >
+              <textarea
+                id="meta"
+                name="meta"
+                rows="3"
+                placeholder="Вкажіть деталі прибуття"
+                required
+              ></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <button type="submit">Згенерувати рапорт</button>
+      </form>
+    </div>
+    <script>
+
+      // --- Збереження/відновлення даних у localStorage ---
+      const form = document.getElementById('reportForm');
+      const fillLastBtn = document.getElementById('fillLastBtn');
+      const clearAllBtn = document.getElementById('clearAllBtn');
+      const STORAGE_KEY = 'last_report_form_data';
+
+      fillLastBtn.onclick = function() {
+        let data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+          data = JSON.parse(data);
+          Object.keys(data).forEach(id => {
+            let el = document.getElementById(id);
+            if (el) el.value = data[id];
+          });
+        }
+      };
+      clearAllBtn.onclick = function() {
+        form.reset();
+        document.querySelectorAll('input[type="date"]').forEach(function(input){
+          input.value = '';
+        });
+      };
+      form.addEventListener('submit', function() {
+        const data = {};
+        Array.from(form.elements).forEach(el => {
+          if (el.id && (el.type!=='submit' && el.type!=='button')) data[el.id] = el.value;
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      });
+
+      // --- Гарячі клавіші ---
+      form.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName!=='TEXTAREA') {
+          e.preventDefault();
+          let els = Array.from(form.querySelectorAll('input, select, textarea'));
+          let idx = els.indexOf(e.target);
+          if (idx > -1 && idx < els.length-1) els[idx+1].focus();
+        }
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+      });
+
+      // --- Live-валидація дат та підсвічування обов'язкових полів ---
+      function showDateHint(id, message) {
+  const hint = document.getElementById('hint_' + id);
+  if (hint) {
+    hint.textContent = message;
+    hint.style.display = 'block';
+  }
+}
+function hideDateHint(id) {
+  const hint = document.getElementById('hint_' + id);
+  if (hint) {
+    hint.textContent = '';
+    hint.style.display = 'none';
+  }
+}
+function validateDateField(el) {
+  let valid = true;
+  // Required
+  if (el.hasAttribute('required') && !el.value) {
+    el.style.borderColor = '#f85149';
+    el.title = 'Це поле обов\'язкове';
+    hideDateHint(el.id);
+    valid = false;
+    return valid;
+  } else {
+    el.style.borderColor = '';
+    el.title = '';
+  }
+  // Валідація року
+  if(['issued_date','dbr_issued_date','SZC_date'].includes(el.id)){
+    if (el.value) {
+      const year = parseInt(el.value.slice(0,4), 10);
+      if (isNaN(year) || year < 2022 || year > 2025) {
+        el.style.borderColor = '#f85149';
+        el.title = 'Дата повинна бути з 2022 по 2025 рік';
+        showDateHint(el.id, 'Дата повинна бути в діапазоні 2022-2025 років');
+        valid = false;
+      } else {
+        el.style.borderColor = '';
+        el.title = '';
+        hideDateHint(el.id);
+      }
+    } else {
+      hideDateHint(el.id);
+    }
+  }
+  if(el.id==='birth_date'){
+    if (el.value) {
+      const year = parseInt(el.value.slice(0,4), 10);
+      if (isNaN(year) || year < 1955 || year > 2007) {
+        el.style.borderColor = '#f85149';
+        el.title = 'Рік народження повинен бути з 1955 по 2007';
+        showDateHint(el.id, 'Рік народження повинен бути в діапазоні 1955-2007');
+        valid = false;
+      } else {
+        el.style.borderColor = '';
+        el.title = '';
+        hideDateHint(el.id);
+      }
+    } else {
+      hideDateHint(el.id);
+    }
+  }
+  return valid;
+}
+function validateDates(showAlert = false) {
+        let valid = true;
+        // Перевірка лише кожного поля окремо
+        ['issued_date','dbr_issued_date','SZC_date','birth_date'].forEach(function(id){
+          const el = document.getElementById(id);
+          if (el && !validateDateField(el)) valid = false;
+        });
+        // Перевірка required для інших полів
+        form.querySelectorAll('[required]').forEach(function(el){
+          if (!el.value && !['issued_date','dbr_issued_date','SZC_date','birth_date'].includes(el.id)) {
+            el.style.borderColor = '#f85149';
+            el.title = 'Це поле обов\'язкове';
+            valid = false;
+          } else if (!['issued_date','dbr_issued_date','SZC_date','birth_date'].includes(el.id)) {
+            el.style.borderColor = '';
+            el.title = '';
+          }
+        });
+        if (!valid && showAlert) {
+          alert('Перевірте правильність дат!');
+        }
+        return valid;
+      }
+      // Live-валидація при зміні дат
+      ['issued_date','dbr_issued_date','SZC_date','birth_date'].forEach(function(id){
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', function(){ validateDateField(el); });
+          el.addEventListener('change', function(){ validateDateField(el); });
+          el.addEventListener('blur', function(){ validateDateField(el); });
+        }
+      });
+      // Валідація при submit
+      form.addEventListener('submit', function(e){
+        if (!validateDates(true)) {
+          e.preventDefault();
+        }
+      }, true);
+
+      // Показ/приховання полів "Інше"
+      function showIfCustom(selectId, inputId) {
+        const sel = document.getElementById(selectId);
+        const input = document.getElementById(inputId);
+        sel.addEventListener("change", () => {
+          input.classList.toggle("hidden", sel.value !== "custom");
+        });
+      }
+      showIfCustom("crime_place_select", "crime_place_custom");
+      showIfCustom("crime_type_select", "crime_type_custom");
+
+      // Автоматична інфлекція імен
+      function updateName() {
+        const s = document.getElementById("surname").value.trim();
+        const n = document.getElementById("name").value.trim();
+        const p = document.getElementById("patronymic").value.trim();
+        if (!s || !n || !p) {
+          document.getElementById("genitive_output").value = "";
+          document.getElementById("instrumental_output").value = "";
+          return;
+        }
+        fetch(
+          `/inflect?surname=${encodeURIComponent(s)}&name=${encodeURIComponent(
+            n
+          )}&patronymic=${encodeURIComponent(p)}`
+        )
+          .then((r) => r.json())
+          .then((d) => {
+            document.getElementById("genitive_output").value =
+              d.genitive_variant || "";
+            document.getElementById("instrumental_output").value =
+              d.instrumental_variant || "";
+          })
+          .catch((err) => console.error("Inflection error:", err));
+      }
+      // --- Відстеження ручного редагування відмінків ---
+      let genitiveEdited = false;
+      let instrumentalEdited = false;
+      document.getElementById('genitive_output').addEventListener('input', function(){ genitiveEdited = true; });
+      document.getElementById('instrumental_output').addEventListener('input', function(){ instrumentalEdited = true; });
+      // --- Оновлення відмінків при зміні ПІБ ---
+      ["surname", "name", "patronymic"].forEach((id) => {
+        document.getElementById(id).addEventListener("input", function(){
+          // updateName();
+          // Якщо користувач не редагував вручну — оновити
+          if (!genitiveEdited || !instrumentalEdited) {
+            updateName();
+          }
+        });
+      });
+      // updateName функція має оновлювати поля лише якщо вони не редаговані вручну
+      function updateName() {
+        const surname = document.getElementById("surname").value;
+        const name = document.getElementById("name").value;
+        const patronymic = document.getElementById("patronymic").value;
+        if (!surname || !name || !patronymic) return;
+        fetch(`/inflect?surname=${encodeURIComponent(surname)}&name=${encodeURIComponent(name)}&patronymic=${encodeURIComponent(patronymic)}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (!genitiveEdited) document.getElementById("genitive_output").value = data.genitive_variant;
+            if (!instrumentalEdited) document.getElementById("instrumental_output").value = data.instrumental_variant;
+          });
+      }
+      // Скидання прапорців при очищенні форми
+      document.getElementById('clearAllBtn').addEventListener('click', function(){
+        genitiveEdited = false;
+        instrumentalEdited = false;
+      });
+    </script>
+  </body>
+</html>
