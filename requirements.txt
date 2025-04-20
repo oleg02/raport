@@ -2,5 +2,6 @@ Flask>=2.2.0
 gunicorn
 docxtpl
 pymorphy2
+pymorphy2-dicts-uk
 python-docx
 requests
