@@ -1,2 +1,6 @@
 Flask>=2.2.0
 gunicorn
+docxtpl
+pymorphy2
+python-docx
+requests
